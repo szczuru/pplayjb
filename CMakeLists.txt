@@ -109,8 +109,15 @@ elseif (PLATFORM_PS4)
     set(PS4_PKG_TITLE "pplay @ cpasjuste")
     set(PS4_PKG_TITLE_ID "PPLA00001")
     set(PS4_PKG_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
-    list(APPEND PPLAY_INC)
-    list(APPEND PPLAY_LDFLAGS opus freetype fribidi png bz2)
+    
+    # libjbc - PS4 sandbox escape library
+    file(GLOB LIBJBC_SRC libjbc/*.c)
+    add_library(jbc STATIC ${LIBJBC_SRC})
+    target_compile_options(jbc PRIVATE -nostdlib -nostartfiles -ffreestanding -mno-red-zone)
+    target_include_directories(jbc PUBLIC libjbc)
+    
+    list(APPEND PPLAY_INC libjbc)
+    list(APPEND PPLAY_LDFLAGS jbc opus freetype fribidi png bz2)
 elseif (PLATFORM_LINUX)
     #####################
     # LINUX PLATORM
