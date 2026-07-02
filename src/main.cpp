@@ -8,6 +8,10 @@
 #include "menu_video.h"
 #include "scrapper.h"
 
+#ifdef __PS4__
+#include "ps4_jailbreak.h"
+#endif
+
 #ifdef __SWITCH__
 
 static AppletHookCookie applet_hook_cookie;
@@ -108,6 +112,9 @@ Main::Main(const c2d::Vector2f &size) : C2DRenderer(size) {
     items.emplace_back("Home", "home.png", MenuItem::Position::Top);
 #ifdef __SWITCH__
     items.emplace_back("Usb", "usb.png", MenuItem::Position::Top);
+#endif
+#ifdef __PS4__
+    items.emplace_back("Disc", "usb.png", MenuItem::Position::Top);
 #endif
     items.emplace_back("Network", "network.png", MenuItem::Position::Top);
     items.emplace_back("Options", "options.png", MenuItem::Position::Top);
@@ -218,6 +225,28 @@ void Main::show(MenuType type) {
             usbInit();
             filer->getDir(config->getOption(OPT_UMS_DEVICE)->getString());
 #endif
+#ifdef __PS4__
+    } else if (type == MenuType::Disc) {
+        // Try mounted path first (if jailbreak successfully mounted it)
+        std::string path = pplayIo->getDataPath() + "disc";
+        if (!filer->getDir(path)) {
+            // If mounted path doesn't work, try direct access (requires jailbreak)
+            path = "/mnt/disc";
+            if (!filer->getDir(path)) {
+                messageBox->show("OOPS", "Cannot access disc drive.
+
+Possible reasons:
+- No disc inserted
+- Jailbreak failed
+- Disc has no readable media files", "OK");
+                show(MenuType::Home);
+            } else {
+                filer->clearHistory();
+            }
+        } else {
+            filer->clearHistory();
+        }
+#endif
     } else {
 #ifdef __SWITCH__
         usbHsFsExit();
@@ -319,6 +348,37 @@ int main() {
     }
 #elif __PS4__
     sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_NET);
+    
+    // Initialize jailbreak and escape sandbox
+    printf("
+========================================
+");
+    printf("pplay - PS4 Jailbreak Initialization
+");
+    printf("========================================
+");
+    if (ps4_jailbreak_init() == 0) {
+        printf("[PPLAY] Jailbreak successful!
+");
+        printf("[PPLAY] Full filesystem access enabled
+");
+        
+        // Try to mount disc drive in sandbox for easier access
+        // If this fails, we can still access /mnt/disc directly thanks to jailbreak
+        if (ps4_mount_in_sandbox("/mnt/disc", "disc") == 0) {
+            printf("[PPLAY] Disc drive mounted in sandbox as 'disc'
+");
+        } else {
+            printf("[PPLAY] Note: Disc not mounted in sandbox, but accessible via /mnt/disc
+");
+        }
+    } else {
+        printf("[PPLAY] WARNING: Jailbreak failed, running in sandbox mode
+");
+    }
+    printf("========================================
+
+");
 #endif
 
     Main *main = new Main(size);
