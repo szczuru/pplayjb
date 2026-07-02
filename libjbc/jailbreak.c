@@ -115,7 +115,6 @@ int jbc_jailbreak_cred(struct jbc_cred* ans)
     if (!rootvnode)
         return -1;
 
-    //without some modules wont load like Apputils
     ans->sceProcCap = 0xffffffffffffffff;
     ans->sceProcType = 0x3801000000000013;
     ans->sonyCred = 0xffffffffffffffff;
@@ -174,7 +173,6 @@ int jbc_set_cred(const struct jbc_cred* newp)
     elevated.cdir = old.cdir;
     elevated.jdir = old.jdir;
     elevated.rdir = old.rdir;
-    //this offset is the same in 5.05-9.60, probably safe to use
     uint32_t rc;
     if(elevated.prison)
     {
