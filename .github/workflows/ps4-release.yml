@@ -44,6 +44,19 @@ jobs:
          export OPENORBIS=/opt/pacbrew/ps4/openorbis
          cmake -G "Unix Makefiles" -DPLATFORM_PS4=ON -DCMAKE_BUILD_TYPE=Release ..
 
+    - name: Download libjbc files
+      run: |
+         mkdir -p libjbc
+         cd libjbc
+         curl -O https://raw.githubusercontent.com/sleirsgoevy/ps4-libjbc/master/jailbreak.c
+         curl -O https://raw.githubusercontent.com/sleirsgoevy/ps4-libjbc/master/jailbreak.h
+         curl -O https://raw.githubusercontent.com/sleirsgoevy/ps4-libjbc/master/kernelrw.c
+         curl -O https://raw.githubusercontent.com/sleirsgoevy/ps4-libjbc/master/kernelrw.h
+         curl -O https://raw.githubusercontent.com/sleirsgoevy/ps4-libjbc/master/utils.c
+         curl -O https://raw.githubusercontent.com/sleirsgoevy/ps4-libjbc/master/utils.h
+         curl -O https://raw.githubusercontent.com/sleirsgoevy/ps4-libjbc/master/defs.h
+         cd ..
+
     - name: Build pplay
       run: |
          cd $GITHUB_WORKSPACE/cmake-build
