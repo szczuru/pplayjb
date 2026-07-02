@@ -51,8 +51,9 @@ public:
         Network,
         Current,
 #ifdef __SWITCH__
-        Usb
+        Usb,
 #endif
+        Disc
     };
 
     enum class FontSize {
