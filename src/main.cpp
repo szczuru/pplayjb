@@ -270,7 +270,8 @@ bool Main::isRunning() {
 }
 
 void Main::setRunningStop() {
-    printf("Main::setRunningStop()\n");
+    printf("Main::setRunningStop()
+");
     running = false;
 }
 
