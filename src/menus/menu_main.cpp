@@ -60,7 +60,13 @@ void MenuMain::onOptionSelection(MenuItem *item) {
             setVisibility(Visibility::Hidden, true);
             main->show(Main::MenuType::Usb);
 #endif
+#ifdef __PS4__
+    } else if (item->name == "Disc") {
+        setVisibility(Visibility::Hidden, true);
+        main->show(Main::MenuType::Disc);
+#endif
     } else if (item->name == "Exit") {
+
         main->quit();
     }
 }
